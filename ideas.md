@@ -31,3 +31,7 @@ intervenir los modelos). (Sara, Manuel)
 clasificación) (Manuel, Kevin)
 
 - Documentación (Al final)
+
+#######################################
+
+- Testear con una canción grabada por nosotros

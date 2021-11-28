@@ -2,19 +2,19 @@
 
 * Descripción de datos multivariantes:
 
-  * Descriptivos principales:
-    * media
-    * curtosis
-    * asimetría
-  * Matriz de varianzas y covarianzas
-  * Matriz de varianzas y covarianzas (Datos centrados)
-  * Variabilidad total
-  * Varianza promedio
-  * Varianza generalizada
-  * Variabilidad promedio
-  * Dependencias lineales
+  * Descriptivos principales: (listo)
+    * media (listo)
+    * curtosis (listo)
+    * asimetría (listo)
+  * Matriz de varianzas y covarianzas (listo)
+  * Matriz de varianzas y covarianzas (Datos centrados) (listo)
+  * Variabilidad total (listo)
+  * Varianza promedio (listo)
+  * Varianza generalizada (listo)
+  * Variabilidad promedio (listo)
+  * Dependencias lineales 
 
-* PCA (2 o 3 variables) REF-> https://towardsdatascience.com/k-means-clustering-and-pca-to-categorize-music-by-similar-audio-features-df09c93e8b64
+* PCA (2 o 3 variables) REF-> https://towardsdatascience.com/ k-means-clustering-and-pca-to-categorize-music-by-similar-audio-features-df09c93e8b64 (listo)
 * Clusterización
   * K-means
   * DBSCAN

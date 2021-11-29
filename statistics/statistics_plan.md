@@ -12,9 +12,18 @@
   * Varianza promedio (listo)
   * Varianza generalizada (listo)
   * Variabilidad promedio (listo)
+  * Matriz de correlaciones (Mapa de calor)
   * Dependencias lineales 
+  * Reducción de variables (?)
 
 * PCA (2 o 3 variables) REF-> https://towardsdatascience.com/ k-means-clustering-and-pca-to-categorize-music-by-similar-audio-features-df09c93e8b64 (listo)
+
+
+
+### _____________________________ SEMANA 2 ________________________________
+
+
+
 * Clusterización
   * K-means
   * DBSCAN

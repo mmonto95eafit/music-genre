@@ -1,50 +1,49 @@
-import json
-
 import dash
 from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
+
 import plotly.express as px
 import pandas as pd
-import base64
+import numpy as np
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+import base64
+import librosa
+import joblib
+import io
+
+from helpers import extract_features, WINDOW_SIZE, BEST_MODEL, MUSIC_GENRES
+
+external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 styles = {
     'pre': {
-        'border': 'thin lightgrey solid',
-        'overflowX': 'scroll'
+        # 'border': 'thin lightgrey solid',
+        # 'overflowX': 'scroll'
     }
 }
 
 app.layout = html.Div([
-    dcc.Upload(
-        id='upload-data',
-        children=html.Div([
-            'Drag and Drop or ',
-            html.A('Select Files')
-        ]),
-        style={
-            'width': '100%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        },
-        # Allow multiple files to be uploaded
-        multiple=True
+    html.Div(
+        dcc.Upload(
+            id='upload-song',
+            children=html.Div([
+                'Drag and Drop or ',
+                html.A('Select Files')
+            ]),
+            className='border rounded-pill p-5 text-center dashed cursor-pointer',
+        ),
+        className='container d-flex align-items-center vh-100'
     ),
     html.Div(id='output-data-upload'),
 ])
 
 
-def parse_contents(contents, filename, date):
-    content_type, content_string = contents.split(',')
+def parse_contents(content, filename):
+    content_type, content_string = content.split(',')
 
     decoded = base64.b64decode(content_string)
     try:
@@ -61,36 +60,34 @@ def parse_contents(contents, filename, date):
             'There was an error processing this file.'
         ])
 
-    return html.Div([
-        html.H5(filename),
-        html.H6(datetime.datetime.fromtimestamp(date)),
-
-        dash_table.DataTable(
-            data=df.to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in df.columns]
-        ),
-
-        html.Hr(),  # horizontal line
-
-        # For debugging, display the raw contents provided by the web browser
-        html.Div('Raw Content'),
-        html.Pre(contents[0:200] + '...', style={
-            'whiteSpace': 'pre-wrap',
-            'wordBreak': 'break-all'
-        })
-    ])
+    return
 
 
 @app.callback(Output('output-data-upload', 'children'),
-              Input('upload-data', 'contents'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
-def update_output(list_of_contents, list_of_names, list_of_dates):
-    if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
-        return children
+              Input('upload-song', 'contents'),
+              State('upload-song', 'filename'))
+def update_output(content, filename):
+
+    if filename is None:
+        return dash.no_update
+
+    if '.wav' in filename:
+        content_type, content_string = content.split(',')
+        decoded = base64.b64decode(content_string)
+
+        signal, sample_rate = librosa.load(io.BytesIO(decoded))
+        signal, _ = librosa.effects.trim(signal)  # Get rid of silence at the begining and end
+        n_points = WINDOW_SIZE * sample_rate
+
+        for i in range(int(len(signal) / n_points)):
+            window = signal[i * n_points:(i + 1) * n_points]
+            if len(window):
+                values = extract_features(window)
+                model = joblib.load(BEST_MODEL)
+                return html.Div([
+                    MUSIC_GENRES[model.predict(np.array(values).reshape(1, -1))[0]]
+                ])  # ToDo: Base decision on the prediction for all of the windows
+
 
 # app.layout = html.Div([
 #     dcc.Graph(

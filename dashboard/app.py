@@ -7,6 +7,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 import numpy as np
+from scipy.stats import mode
 
 import base64
 import librosa
@@ -28,17 +29,22 @@ styles = {
 
 app.layout = html.Div([
     html.Div(
-        dcc.Upload(
+        [dcc.Upload(
             id='upload-song',
             children=html.Div([
-                'Drag and Drop or ',
-                html.A('Select Files')
+                'Arrastra o selecciona un archivo .wav'
             ]),
-            className='border rounded-pill p-5 text-center dashed cursor-pointer',
+            className='border rounded-pill p-5 mt-5 mb-3 text-center dashed cursor-pointer c-white f-22-em',
         ),
-        className='container d-flex align-items-center vh-100'
+            dcc.Loading(
+                id="loading",
+                children=[html.Div(id='output-data-upload', className='text-center m-4 c-white f-16-em')],
+                type="circle",
+                color='#415053'
+            ),
+        ],
+        className='container d-flex flex-column vh-100 p-5'
     ),
-    html.Div(id='output-data-upload'),
 ])
 
 
@@ -79,14 +85,20 @@ def update_output(content, filename):
         signal, _ = librosa.effects.trim(signal)  # Get rid of silence at the begining and end
         n_points = WINDOW_SIZE * sample_rate
 
+        predictions = []
         for i in range(int(len(signal) / n_points)):
             window = signal[i * n_points:(i + 1) * n_points]
             if len(window):
                 values = extract_features(window)
                 model = joblib.load(BEST_MODEL)
-                return html.Div([
-                    MUSIC_GENRES[model.predict(np.array(values).reshape(1, -1))[0]]
-                ])  # ToDo: Base decision on the prediction for all of the windows
+                predictions.append(model.predict(np.array(values).reshape(1, -1))[0])
+
+        return html.Div([
+            f'El género de la canción que subiste es',
+            html.Div(f'{MUSIC_GENRES[mode(predictions)[0][0]].upper()}', className='c-blue f-22-em')
+        ])  # ToDo: Base decision on the prediction for all of the windows
+
+    return html.Div('Debes subir un archivo .wav')
 
 
 # app.layout = html.Div([

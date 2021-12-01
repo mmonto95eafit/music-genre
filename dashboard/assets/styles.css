@@ -1,3 +1,27 @@
+body {
+    background-image: url('music.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center bottom;
+    font-family: "Arial Rounded MT", sans-serif;
+}
+
+.c-white {
+    color: #F1F1F1;
+}
+
+.c-blue {
+    color: #415053;
+}
+
+.f-22-em {
+    font-size: 2.2em;
+}
+
+.f-16-em {
+    font-size: 1.6em;
+}
+
 #upload-song {
     width: 100%;
 }

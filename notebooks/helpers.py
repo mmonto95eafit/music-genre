@@ -67,8 +67,7 @@ def mahalanobis(x, data, cov):
     return mahalanobis_distances
 
 
-def get_datasets():
-    data_path = '../data/features_3_sec.csv'
+def get_datasets(data_path='../data/features_3_sec.csv'):
     df = pd.read_csv(data_path)
     df['label'] = df['label'].astype('category')
     df['length'] = pd.to_numeric(df['length'])
@@ -86,7 +85,7 @@ def get_datasets():
     data = df.iloc[:, 2:-1]
     data_norm = scaler.fit_transform(data)
     cov_h_norm = np.cov(x_norm.T)
-    cov_i_norm = cov_h_norm + 10 * np.eye(57, 57)
+    cov_i_norm = cov_h_norm + 10 * np.eye(cov_h_norm.shape[0], cov_h_norm.shape[1])
     mahalanobis_dis_i_norm = mahalanobis(x=x_norm, data=data_norm, cov=cov_i_norm)
 
     # x_fn = x_norm[mahalanobis_dis_i_norm < 0.4]
